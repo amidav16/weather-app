@@ -1,4 +1,4 @@
-# This project was made for an assigment made by Handelsbanken
+## Handelsbanken Weather - app
 
 # What this project contains:
 
@@ -8,12 +8,14 @@ I also utilized MUI 6 for my UI library, primarily their Dashboard and Card comp
 
 # What would I have done differently?
 
-This assignment was really enjoyable, I didn't feel too content with my choices as I spent alot of time planning out what API and UI library to use. I initially thought of using Meta Weather API and Chakra UI.
-I felt a bit lost when attempting to understand Meta Weather API and I have never worked with Chakra UI, and realised learning it too ambitious with little time constraint.
-If I had more time I would have for sure improved the looks of the Weather details when you click a card. Maybe a card highlight once you hover over one and a suttle animation that plays once you view the details.
-I thought that my approach towards using a Dropdown could have been better. Instead I should have opted for a searchable dropdown.
+This assignment was really enjoyable, I spent some time planning out what API and UI library to use. I initially thought of using Meta Weather API and Chakra UI.
 
-Make a better Test for the application, since i'm not confident in testing of code (I didn't utilize code test during Dbwatch, not enough experience). I want to be more confident in testing and make a proper test for example an integration test like the API call itself.
+I felt a bit lost when attempting to understand Meta Weather API and I have never worked with Chakra UI, and realised learning within the assignment was a little too ambitious.
+
+If I had more time I would have for sure improved the looks of the Weather details when you click a card. Maybe a card highlight once you hover over one and a suttle animation that plays once you view the details.
+I thought that my approach towards using a Dropdown could have been better. Instead I should have opted for a searchable dropdown while also creating more cards instead of only have one for my selected location.
+
+Make a better Test for the application, since i'm not confident in code testing(I didn't utilize code test during Dbwatch, not enough experience). I want to be more confident in testing and make a proper test for example an integration test like the API call itself.
 
 More cleaner and more sturctured code.
 
