@@ -4,8 +4,9 @@ import Grid from "@mui/material/Grid2";
 import Box from "@mui/material/Box";
 import Dropdown from "./dropdown";
 import WeatherCard from "./card";
-
 import WeatherDetails from "./weatherdetail";
+import { fetchWeatherApi } from "openmeteo";
+import { saveWeatherData, loadWeatherData } from "./localstorageutils";
 
 interface Location {
   name: string;
@@ -18,33 +19,72 @@ const Dashboard: React.FC = () => {
   const [berlinWeatherData, setBerlinWeatherData] = useState<any>(null);
   const [londonWeatherData, setLondonWeatherData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
-  const [selectedLocation, setSelectedLocation] = useState<Location>(
-    locations[0]
-  );
-
+  const [selectedLocation, setSelectedLocation] = useState<Location>(locations[0]);
   const [weatherDetails, setWeatherDetails] = useState<any>(null);
   const [showDetails, setShowDetails] = useState<boolean>(false);
+
+  // Load data from localStorage on component mount
+  useEffect(() => {
+    const savedData = loadWeatherData();
+    if (savedData) {
+      setSelectedLocation({
+        name: savedData.locationName,
+        latitude: 0,
+        longitude: 0,
+      });
+      setSelectedWeatherData(savedData.weatherData);
+    }
+  }, []);
 
   const fetchWeatherData = async (latitude: number, longitude: number) => {
     const params = {
       latitude,
       longitude,
       current: current,
-      timezone: "auto",
-      models: "metno_seamless",
+      daily: ["sunrise", "sunset"],
+      timezone: "GMT",
     };
 
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${params.latitude}&longitude=${params.longitude}&current=${params.current.join(",")}&timezone=${params.timezone}&models=${params.models}`;
-
     try {
-      const response = await fetch(url);
-      const data = await response.json();
+      const url = "https://api.open-meteo.com/v1/forecast";
+      const responses = await fetchWeatherApi(url, params);
 
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to fetch data");
-      }
+      const range = (start: number, stop: number, step: number) => Array.from({ length: (stop - start) / step }, (_, i) => start + i * step);
 
-      return data.current;
+      const response = responses[0];
+
+      const utcOffsetSeconds = response.utcOffsetSeconds();
+      const current = response.current()!;
+      const daily = response.daily()!;
+
+      if (!daily) throw new Error("No daily data available");
+      if (!current) throw new Error("No current data available");
+
+      return {
+        current: {
+          time: new Date((Number(current.time()) + utcOffsetSeconds) * 1000),
+          temperature2m: current.variables(0)!.value(),
+          relativeHumidity2m: current.variables(1)!.value(),
+          apparentTemperature: current.variables(2)!.value(),
+          isDay: current.variables(3)!.value(),
+          precipitation: current.variables(4)!.value(),
+          rain: current.variables(5)!.value(),
+          showers: current.variables(6)!.value(),
+          snowfall: current.variables(7)!.value(),
+          weatherCode: current.variables(8)!.value(),
+          cloudCover: current.variables(9)!.value(),
+          pressureMsl: current.variables(10)!.value(),
+          surfacePressure: current.variables(11)!.value(),
+          windSpeed10m: current.variables(12)!.value(),
+          windDirection10m: current.variables(13)!.value(),
+          windGusts10m: current.variables(14)!.value(),
+        },
+        daily: {
+          time: range(Number(daily.time()), Number(daily.timeEnd()), daily.interval()).map((t) => new Date((t + utcOffsetSeconds) * 1000)),
+          sunrise: daily.variables(0)!.valuesArray()!,
+          sunset: daily.variables(1)!.valuesArray()!,
+        },
+      };
     } catch (err) {
       console.error(err);
       setError("Failed to fetch weather data");
@@ -53,8 +93,14 @@ const Dashboard: React.FC = () => {
   };
 
   const fetchSelectedLocationWeather = async () => {
-    const { latitude, longitude } = selectedLocation; // Use the Location object directly
-    setSelectedWeatherData(await fetchWeatherData(latitude, longitude));
+    const { latitude, longitude } = selectedLocation;
+    const weatherData = await fetchWeatherData(latitude, longitude);
+    setSelectedWeatherData(weatherData);
+
+    // Save the selected location name and fetched weather data to localStorage
+    if (weatherData) {
+      saveWeatherData(selectedLocation.name, weatherData);
+    }
   };
 
   useEffect(() => {
@@ -71,18 +117,17 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     fetchSelectedLocationWeather();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedLocation]);
 
   if (error) return <div>{error}</div>;
 
-  const handleCardClick = (data: any, location: any) => {
-    setWeatherDetails({ data, location }); // Set selected weather data
-    setShowDetails(true); // Show detailed weather data
+  const handleCardClick = (data: any, location: Location) => {
+    setWeatherDetails({ data, location });
+    setShowDetails(true);
   };
 
   const handleGoBack = () => {
-    setShowDetails(false); // Hide the details view
+    setShowDetails(false);
   };
 
   console.log(weatherDetails);
@@ -91,29 +136,20 @@ const Dashboard: React.FC = () => {
     <div>
       <h1>Dashboard</h1>
 
-      {!showDetails ? ( // Conditional rendering for cards
+      {!showDetails ? (
         <>
-          <Dropdown
-            selectedLocation={selectedLocation}
-            setSelectedLocation={setSelectedLocation}
-          />
+          <Dropdown selectedLocation={selectedLocation} setSelectedLocation={setSelectedLocation} />
 
           <Box sx={{ flexGrow: 1, m: 4 }}>
-            <Grid
-              container
-              spacing={{ xs: 2, md: 3 }}
-              columns={{ xs: 4, sm: 8, md: 12 }}
-            >
+            <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
               <Grid size={4} sx={{ minWidth: 300 }}>
                 <div>
                   {selectedWeatherData ? (
                     <WeatherCard
                       locationName={selectedLocation.name}
-                      temperature={selectedWeatherData.temperature_2m}
-                      humidity={selectedWeatherData.relative_humidity_2m}
-                      onClick={() =>
-                        handleCardClick(selectedWeatherData, selectedLocation)
-                      }
+                      temperature={selectedWeatherData.current.temperature2m}
+                      humidity={selectedWeatherData.current.relativeHumidity2m}
+                      onClick={() => handleCardClick(selectedWeatherData, selectedLocation)}
                     />
                   ) : (
                     <p>No data available for {selectedLocation.name}</p>
@@ -125,8 +161,8 @@ const Dashboard: React.FC = () => {
                   {berlinWeatherData ? (
                     <WeatherCard
                       locationName="Berlin"
-                      temperature={berlinWeatherData.temperature_2m}
-                      humidity={berlinWeatherData.relative_humidity_2m}
+                      temperature={berlinWeatherData.current.temperature2m}
+                      humidity={berlinWeatherData.current.relativeHumidity2m}
                       onClick={() =>
                         handleCardClick(berlinWeatherData, {
                           name: "Berlin",
@@ -144,8 +180,8 @@ const Dashboard: React.FC = () => {
                 {londonWeatherData ? (
                   <WeatherCard
                     locationName="London"
-                    temperature={londonWeatherData.temperature_2m}
-                    humidity={londonWeatherData.relative_humidity_2m}
+                    temperature={londonWeatherData.current.temperature2m}
+                    humidity={londonWeatherData.current.relativeHumidity2m}
                     onClick={() =>
                       handleCardClick(londonWeatherData, {
                         name: "London",
@@ -162,12 +198,7 @@ const Dashboard: React.FC = () => {
           </Box>
         </>
       ) : (
-        // Render weather details when showDetails is true
-        <WeatherDetails
-          name={weatherDetails.location.name}
-          weatherDetails={weatherDetails.data}
-          handleGoBack={handleGoBack}
-        />
+        <WeatherDetails name={weatherDetails.location.name} weatherDetails={weatherDetails.data} handleGoBack={handleGoBack} />
       )}
     </div>
   );

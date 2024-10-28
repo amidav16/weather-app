@@ -28,13 +28,7 @@ const demoTheme = createTheme({
   },
 });
 
-function DemoPageContent({
-  pathname,
-  navigate,
-}: {
-  pathname: string;
-  navigate: (path: string | URL) => void;
-}) {
+function DemoPageContent({ pathname, navigate }: { pathname: string; navigate: (path: string | URL) => void }) {
   return (
     <Box
       sx={{
@@ -120,12 +114,8 @@ export default function DashboardLayoutPattern(props: DemoProps) {
       window={demoWindow}
     >
       <DashboardLayout>
-        <DemoPageContent
-          pathname={router.pathname}
-          navigate={router.navigate}
-        />
+        <DemoPageContent pathname={router.pathname} navigate={router.navigate} />
       </DashboardLayout>
     </AppProvider>
-    // preview-end
   );
 }

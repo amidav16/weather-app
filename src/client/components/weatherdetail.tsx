@@ -1,10 +1,12 @@
 import React from "react";
 import { Card, CardContent, Typography, Button, Box } from "@mui/material";
-
 import Grid from "@mui/material/Grid2";
 import ThermostatIcon from "@mui/icons-material/Thermostat";
 import OpacityIcon from "@mui/icons-material/Opacity";
+import CompressIcon from "@mui/icons-material/Compress";
 import AirIcon from "@mui/icons-material/Air";
+import GrainIcon from "@mui/icons-material/Grain";
+import CloudIcon from "@mui/icons-material/Cloud";
 import WbSunnyIcon from "@mui/icons-material/WbSunny";
 import NightlightIcon from "@mui/icons-material/Nightlight";
 import { useTheme } from "@mui/material/styles";
@@ -12,24 +14,36 @@ import { useTheme } from "@mui/material/styles";
 interface WeatherDetailsProps {
   name: string;
   weatherDetails: {
-    temperature_2m: number;
-    relative_humidity_2m: number;
-    apparent_temperature: number;
-    precipitation: number;
-    cloud_cover: number;
-    pressure_msl: number;
-    wind_speed_10m: number;
-    is_day: number;
+    current: {
+      temperature2m: number;
+      relativeHumidity2m: number;
+      apparentTemperature: number;
+      precipitation: number;
+      cloudCover: number;
+      pressureMsl: number;
+      windSpeed10m: number;
+      isDay: number;
+    };
+    daily: { sunrise: number; sunset: number };
   };
   handleGoBack: () => void;
 }
 
-const WeatherDetails: React.FC<WeatherDetailsProps> = ({
-  name,
-  weatherDetails,
-  handleGoBack,
-}) => {
+const WeatherDetails: React.FC<WeatherDetailsProps> = ({ name, weatherDetails, handleGoBack }) => {
   const theme = useTheme();
+
+  // Helper function to round numbers
+  const formatNumber = (value: number, decimals: number) => {
+    return Number(value.toFixed(decimals));
+  };
+
+  // Use the helper function to get formatted values
+  const roundedTemp = formatNumber(weatherDetails.current.temperature2m, 2);
+  const roundedApparentTemp = formatNumber(weatherDetails.current.apparentTemperature, 2);
+  const roundedPrecipitation = formatNumber(weatherDetails.current.precipitation, 3);
+  const roundedPressure = formatNumber(weatherDetails.current.pressureMsl, 3);
+  const roundedWind = formatNumber(weatherDetails.current.windSpeed10m, 3);
+
   return (
     <Box sx={{ maxWidth: 500, mx: "auto", my: 4 }}>
       <Card
@@ -42,13 +56,19 @@ const WeatherDetails: React.FC<WeatherDetailsProps> = ({
           <Typography variant="h4" component="h2" gutterBottom>
             {name}
           </Typography>
-          <Typography
-            variant="h6"
-            sx={{ display: "flex", alignItems: "center", mb: 2 }}
-          >
-            {weatherDetails.is_day ? <WbSunnyIcon /> : <NightlightIcon />}
-            &nbsp;{weatherDetails.temperature_2m} °C
-          </Typography>
+
+          <Grid container spacing={2}>
+            {/* Day and Weather */}
+            <Grid size={6}>
+              <Box display="flex" alignItems="center">
+                <Typography variant="h6" sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                  {weatherDetails.current.isDay ? <WbSunnyIcon /> : <NightlightIcon />}
+                  &nbsp;{roundedTemp} °C
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid size={6}>Weather</Grid>
+          </Grid>
 
           <Grid container spacing={2}>
             {/* Temp and Humidity */}
@@ -56,7 +76,7 @@ const WeatherDetails: React.FC<WeatherDetailsProps> = ({
               <Box display="flex" alignItems="center">
                 <ThermostatIcon />
                 <Typography variant="body1" sx={{ ml: 1 }}>
-                  Apparent temp: {weatherDetails.apparent_temperature} °C
+                  Apparent temp: {roundedApparentTemp} °C
                 </Typography>
               </Box>
             </Grid>
@@ -64,7 +84,7 @@ const WeatherDetails: React.FC<WeatherDetailsProps> = ({
               <Box display="flex" alignItems="center">
                 <OpacityIcon />
                 <Typography variant="body1" sx={{ ml: 1 }}>
-                  Humidity: {weatherDetails.relative_humidity_2m}%
+                  Humidity: {weatherDetails.current.relativeHumidity2m}%
                 </Typography>
               </Box>
             </Grid>
@@ -72,17 +92,17 @@ const WeatherDetails: React.FC<WeatherDetailsProps> = ({
             {/* Precipitation and Cloud Cover */}
             <Grid size={6}>
               <Box display="flex" alignItems="center">
-                <OpacityIcon />
+                <GrainIcon />
                 <Typography variant="body1" sx={{ ml: 1 }}>
-                  Precipitation: {weatherDetails.precipitation} mm
+                  Precipitation: {roundedPrecipitation} mm
                 </Typography>
               </Box>
             </Grid>
             <Grid size={6}>
               <Box display="flex" alignItems="center">
-                <OpacityIcon />
+                <CloudIcon />
                 <Typography variant="body1" sx={{ ml: 1 }}>
-                  Cloud Cover: {weatherDetails.cloud_cover}%
+                  Cloud Cover: {weatherDetails.current.cloudCover}%
                 </Typography>
               </Box>
             </Grid>
@@ -90,9 +110,9 @@ const WeatherDetails: React.FC<WeatherDetailsProps> = ({
             {/* Pressure and Wind Speed */}
             <Grid size={6}>
               <Box display="flex" alignItems="center">
-                <ThermostatIcon />
+                <CompressIcon />
                 <Typography variant="body1" sx={{ ml: 1 }}>
-                  Pressure: {weatherDetails.pressure_msl} hPa
+                  Pressure: {roundedPressure} hPa
                 </Typography>
               </Box>
             </Grid>
@@ -100,7 +120,7 @@ const WeatherDetails: React.FC<WeatherDetailsProps> = ({
               <Box display="flex" alignItems="center">
                 <AirIcon />
                 <Typography variant="body1" sx={{ ml: 1 }}>
-                  Wind: {weatherDetails.wind_speed_10m} km/h
+                  Wind: {roundedWind} km/h
                 </Typography>
               </Box>
             </Grid>

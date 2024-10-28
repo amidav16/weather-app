@@ -4,23 +4,19 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import CardActions from "@mui/material/CardActions";
-import Button from "@mui/material/Button";
 import { useTheme } from "@mui/material/styles";
 
 interface WeatherCardProps {
   locationName: string;
   temperature: number;
   humidity: number;
-  onClick: () => void; // Function to handle click
+  onClick: () => void;
 }
 
-const WeatherCard: React.FC<WeatherCardProps> = ({
-  locationName,
-  temperature,
-  humidity,
-  onClick,
-}) => {
+const WeatherCard: React.FC<WeatherCardProps> = ({ locationName, temperature, humidity, onClick }) => {
   const theme = useTheme();
+
+  const roundedTemp = Number(temperature?.toFixed(2));
 
   return (
     <Box sx={{ minWidth: 300, cursor: "pointer" }} onClick={onClick}>
@@ -31,11 +27,8 @@ const WeatherCard: React.FC<WeatherCardProps> = ({
         }}
       >
         <CardContent>
-          <Typography
-            gutterBottom
-            sx={{ color: "text.secondary", fontSize: 14 }}
-          >
-            Temperature: {temperature} °C
+          <Typography gutterBottom sx={{ color: "text.secondary", fontSize: 14 }}>
+            Temperature: {roundedTemp} °C
           </Typography>
           <Typography variant="h4" component="div">
             {locationName}
