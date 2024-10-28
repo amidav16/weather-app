@@ -94,7 +94,7 @@ export default function DashboardLayoutPattern(props: DemoProps) {
     // preview-start
     <AppProvider
       branding={{
-        title: "Handelsbanken Weather App",
+        title: "Handelsbanken App",
       }}
       navigation={[
         {
