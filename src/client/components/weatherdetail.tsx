@@ -10,6 +10,7 @@ import CloudIcon from "@mui/icons-material/Cloud";
 import WbSunnyIcon from "@mui/icons-material/WbSunny";
 import NightlightIcon from "@mui/icons-material/Nightlight";
 import { useTheme } from "@mui/material/styles";
+import { weatherCodeMapping } from "./data";
 
 interface WeatherDetailsProps {
   name: string;
@@ -17,6 +18,7 @@ interface WeatherDetailsProps {
     current: {
       temperature2m: number;
       relativeHumidity2m: number;
+      weatherCode: number;
       apparentTemperature: number;
       precipitation: number;
       cloudCover: number;
@@ -39,10 +41,13 @@ const WeatherDetails: React.FC<WeatherDetailsProps> = ({ name, weatherDetails, h
 
   // Use the helper function to get formatted values
   const roundedTemp = formatNumber(weatherDetails.current.temperature2m, 2);
-  const roundedApparentTemp = formatNumber(weatherDetails.current.apparentTemperature, 2);
+  const roundedApparentTemp = formatNumber(weatherDetails.current.apparentTemperature, 1);
   const roundedPrecipitation = formatNumber(weatherDetails.current.precipitation, 3);
   const roundedPressure = formatNumber(weatherDetails.current.pressureMsl, 3);
   const roundedWind = formatNumber(weatherDetails.current.windSpeed10m, 3);
+
+  // Get the weather description and icon based on the weather code
+  const weatherInfo = weatherCodeMapping[weatherDetails.current.weatherCode] || { description: "Unknown", icon: null };
 
   return (
     <Box sx={{ maxWidth: 500, mx: "auto", my: 4 }}>
@@ -67,7 +72,14 @@ const WeatherDetails: React.FC<WeatherDetailsProps> = ({ name, weatherDetails, h
                 </Typography>
               </Box>
             </Grid>
-            <Grid size={6}>Weather</Grid>
+            <Grid size={6}>
+              <Box display="flex" alignItems="center">
+                <Typography variant="h6" sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                  {weatherInfo.icon}
+                  &nbsp;{weatherInfo.description}
+                </Typography>
+              </Box>
+            </Grid>
           </Grid>
 
           <Grid container spacing={2}>

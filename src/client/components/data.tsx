@@ -1,4 +1,15 @@
 //Location and Current Data
+import ClearIcon from "@mui/icons-material/WbSunny"; // Use appropriate icons
+import PartlyCloudyIcon from "@mui/icons-material/Cloud"; // Change icons as needed
+import OvercastIcon from "@mui/icons-material/CloudQueue"; // Change icons as needed
+import RainIcon from "@mui/icons-material/Grain"; // Use appropriate icons
+import SnowIcon from "@mui/icons-material/AcUnit"; // Use appropriate icons
+import ThunderstormIcon from "@mui/icons-material/Thunderstorm"; // Use appropriate icons
+
+interface WeatherInfo {
+  description: string;
+  icon: React.ReactNode; // Use ReactNode for MUI icons
+}
 
 export const locations = [
   { name: "Oslo", latitude: 59.9139, longitude: 10.7522 },
@@ -49,3 +60,22 @@ export const current = [
   "wind_direction_10m",
   "wind_gusts_10m",
 ];
+
+export const weatherCodeMapping: Record<number, WeatherInfo> = {
+  0: { description: "Clear sky", icon: <ClearIcon sx={{ color: "#42a5f5" }} /> },
+  1: { description: "Mainly clear", icon: <PartlyCloudyIcon sx={{ color: "#42a5f5" }} /> },
+  2: { description: "Partly cloudy", icon: <PartlyCloudyIcon sx={{ color: "#42a5f5" }} /> },
+  3: { description: "Overcast", icon: <OvercastIcon sx={{ color: "#42a5f5" }} /> },
+  45: { description: "Fog", icon: <PartlyCloudyIcon sx={{ color: "#42a5f5" }} /> },
+  48: { description: "Fog", icon: <PartlyCloudyIcon sx={{ color: "#42a5f5" }} /> },
+  51: { description: "Light drizzle", icon: <RainIcon sx={{ color: "#42a5f5" }} /> },
+  53: { description: "Moderate drizzle", icon: <RainIcon sx={{ color: "#42a5f5" }} /> },
+  55: { description: "Dense drizzle", icon: <RainIcon sx={{ color: "#42a5f5" }} /> },
+  61: { description: "Slight rain", icon: <RainIcon sx={{ color: "#42a5f5" }} /> },
+  63: { description: "Moderate rain", icon: <RainIcon sx={{ color: "#42a5f5" }} /> },
+  65: { description: "Heavy rain", icon: <RainIcon sx={{ color: "#42a5f5" }} /> },
+  71: { description: "Snow flurries", icon: <SnowIcon sx={{ color: "#42a5f5" }} /> },
+  80: { description: "Rain showers", icon: <RainIcon sx={{ color: "#42a5f5" }} /> },
+  81: { description: "Rain showers", icon: <RainIcon sx={{ color: "#42a5f5" }} /> },
+  95: { description: "Thunderstorms", icon: <ThunderstormIcon sx={{ color: "#42a5f5" }} /> },
+};
