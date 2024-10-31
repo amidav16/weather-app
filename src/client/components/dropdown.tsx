@@ -18,10 +18,7 @@ interface BasicSelectProps {
   setSelectedLocation: (location: Location) => void; // Expects a Location object
 }
 
-export default function BasicSelect({
-  selectedLocation,
-  setSelectedLocation,
-}: BasicSelectProps) {
+export default function BasicSelect({ selectedLocation, setSelectedLocation }: BasicSelectProps) {
   const handleLocationChange = (event: SelectChangeEvent<string>) => {
     const selectedName = event.target.value;
     const location = locations.find((loc) => loc.name === selectedName);

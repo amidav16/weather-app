@@ -9,6 +9,11 @@ import GrainIcon from "@mui/icons-material/Grain";
 import CloudIcon from "@mui/icons-material/Cloud";
 import WbSunnyIcon from "@mui/icons-material/WbSunny";
 import NightlightIcon from "@mui/icons-material/Nightlight";
+
+import Switch from "@mui/material/Switch";
+import Paper from "@mui/material/Paper";
+import Grow from "@mui/material/Grow";
+import Divider from "@mui/material/Divider";
 import { useTheme } from "@mui/material/styles";
 import { weatherCodeMapping } from "./data";
 
@@ -50,101 +55,107 @@ const WeatherDetails: React.FC<WeatherDetailsProps> = ({ name, weatherDetails, h
   const weatherInfo = weatherCodeMapping[weatherDetails.current.weatherCode] || { description: "Unknown", icon: null };
 
   return (
-    <Box sx={{ maxWidth: 500, mx: "auto", my: 4 }}>
-      <Card
-        sx={{
-          bgcolor: theme.palette.mode === "dark" ? "grey.800" : "grey.200",
-          p: 2,
-        }}
-      >
-        <CardContent>
-          <Typography variant="h4" component="h2" gutterBottom>
-            {name}
-          </Typography>
+    <>
+      <Grow in={true} style={{ transformOrigin: "0 0 0" }} {...(true ? { timeout: 400 } : {})}>
+        <Box sx={{ maxWidth: 500, mx: "auto", my: 4 }}>
+          <Card
+            sx={{
+              bgcolor: theme.palette.mode === "dark" ? "grey.800" : "grey.200",
+              p: 2,
+            }}
+          >
+            <CardContent>
+              <Typography variant="h4" component="h2" gutterBottom>
+                {name}
+              </Typography>
 
-          <Grid container spacing={2}>
-            {/* Day and Weather */}
-            <Grid size={6}>
-              <Box display="flex" alignItems="center">
-                <Typography variant="h6" sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                  {weatherDetails.current.isDay ? <WbSunnyIcon /> : <NightlightIcon />}
-                  &nbsp;{roundedTemp} °C
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid size={6}>
-              <Box display="flex" alignItems="center">
-                <Typography variant="h6" sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                  {weatherInfo.icon}
-                  &nbsp;{weatherInfo.description}
-                </Typography>
-              </Box>
-            </Grid>
-          </Grid>
+              <Grid container spacing={2}>
+                {/* Day and Weather */}
+                <Grid size={6}>
+                  <Box display="flex" alignItems="center">
+                    <Typography variant="h6" sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                      {weatherDetails.current.isDay ? <WbSunnyIcon /> : <NightlightIcon />}
+                      &nbsp;{roundedTemp} °C
+                    </Typography>
+                  </Box>
+                </Grid>
+                <Grid size={6}>
+                  <Box display="flex" alignItems="center">
+                    <Typography variant="h6" sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                      {weatherInfo.icon}
+                      &nbsp;{weatherInfo.description}
+                    </Typography>
+                  </Box>
+                </Grid>
+              </Grid>
 
-          <Grid container spacing={2}>
-            {/* Temp and Humidity */}
-            <Grid size={6}>
-              <Box display="flex" alignItems="center">
-                <ThermostatIcon />
-                <Typography variant="body1" sx={{ ml: 1 }}>
-                  Apparent temp: {roundedApparentTemp} °C
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid size={6}>
-              <Box display="flex" alignItems="center">
-                <OpacityIcon />
-                <Typography variant="body1" sx={{ ml: 1 }}>
-                  Humidity: {weatherDetails.current.relativeHumidity2m}%
-                </Typography>
-              </Box>
-            </Grid>
+              <Divider sx={{ mb: 2.5 }} />
 
-            {/* Precipitation and Cloud Cover */}
-            <Grid size={6}>
-              <Box display="flex" alignItems="center">
-                <GrainIcon />
-                <Typography variant="body1" sx={{ ml: 1 }}>
-                  Precipitation: {roundedPrecipitation} mm
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid size={6}>
-              <Box display="flex" alignItems="center">
-                <CloudIcon />
-                <Typography variant="body1" sx={{ ml: 1 }}>
-                  Cloud Cover: {weatherDetails.current.cloudCover}%
-                </Typography>
-              </Box>
-            </Grid>
+              <Grid container spacing={2}>
+                {/* Temp and Humidity */}
+                <Grid size={6}>
+                  <Box display="flex" alignItems="center">
+                    <ThermostatIcon />
+                    <Typography variant="body1" sx={{ ml: 1 }}>
+                      Apparent temp: {roundedApparentTemp} °C
+                    </Typography>
+                  </Box>
+                </Grid>
+                <Grid size={6}>
+                  <Box display="flex" alignItems="center">
+                    <OpacityIcon />
+                    <Typography variant="body1" sx={{ ml: 1 }}>
+                      Humidity: {weatherDetails.current.relativeHumidity2m}%
+                    </Typography>
+                  </Box>
+                </Grid>
 
-            {/* Pressure and Wind Speed */}
-            <Grid size={6}>
-              <Box display="flex" alignItems="center">
-                <CompressIcon />
-                <Typography variant="body1" sx={{ ml: 1 }}>
-                  Pressure: {roundedPressure} hPa
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid size={6}>
-              <Box display="flex" alignItems="center">
-                <AirIcon />
-                <Typography variant="body1" sx={{ ml: 1 }}>
-                  Wind: {roundedWind} km/h
-                </Typography>
-              </Box>
-            </Grid>
-          </Grid>
-        </CardContent>
+                {/* Precipitation and Cloud Cover */}
+                <Grid size={6}>
+                  <Box display="flex" alignItems="center">
+                    <GrainIcon />
+                    <Typography variant="body1" sx={{ ml: 1 }}>
+                      Precipitation: {roundedPrecipitation} mm
+                    </Typography>
+                  </Box>
+                </Grid>
+                <Grid size={6}>
+                  <Box display="flex" alignItems="center">
+                    <CloudIcon />
+                    <Typography variant="body1" sx={{ ml: 1 }}>
+                      Cloud Cover: {weatherDetails.current.cloudCover}%
+                    </Typography>
+                  </Box>
+                </Grid>
 
-        {/* Go Back Button */}
-        <Button variant="contained" onClick={handleGoBack} sx={{ mt: 2 }}>
-          Go Back
-        </Button>
-      </Card>
-    </Box>
+                {/* Pressure and Wind Speed */}
+                <Grid size={6}>
+                  <Box display="flex" alignItems="center">
+                    <CompressIcon />
+                    <Typography variant="body1" sx={{ ml: 1 }}>
+                      Pressure: {roundedPressure} hPa
+                    </Typography>
+                  </Box>
+                </Grid>
+                <Grid size={6}>
+                  <Box display="flex" alignItems="center">
+                    <AirIcon />
+                    <Typography variant="body1" sx={{ ml: 1 }}>
+                      Wind: {roundedWind} km/h
+                    </Typography>
+                  </Box>
+                </Grid>
+              </Grid>
+            </CardContent>
+
+            {/* Go Back Button */}
+            <Button variant="contained" onClick={handleGoBack} sx={{ mt: 2 }}>
+              Go Back
+            </Button>
+          </Card>
+        </Box>
+      </Grow>
+    </>
   );
 };
 

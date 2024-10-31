@@ -29,6 +29,12 @@ const demoTheme = createTheme({
 });
 
 function DemoPageContent({ pathname, navigate }: { pathname: string; navigate: (path: string | URL) => void }) {
+  const [isCelsius, setIsCelsius] = React.useState<boolean>(true);
+
+  const handleChange = () => {
+    setIsCelsius((p) => !p);
+  };
+
   return (
     <Box
       sx={{
