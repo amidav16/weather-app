@@ -1,15 +1,19 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { createTheme } from "@mui/material/styles";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import ThermostatIcon from "@mui/icons-material/Thermostat";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import IconButton from "@mui/material/IconButton";
+
 import { AppProvider } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import { useDemoRouter } from "@toolpad/core/internal";
 
+import { saveIsCelsius, loadIsCelsius } from "./localstorageutils";
 import Dashboard from "./dashboard";
 
 const demoTheme = createTheme({
@@ -28,13 +32,7 @@ const demoTheme = createTheme({
   },
 });
 
-function DemoPageContent({ pathname, navigate }: { pathname: string; navigate: (path: string | URL) => void }) {
-  const [isCelsius, setIsCelsius] = React.useState<boolean>(true);
-
-  const handleChange = () => {
-    setIsCelsius((p) => !p);
-  };
-
+function DemoPageContent({ pathname, navigate, isCelsius }: { pathname: string; navigate: (path: string | URL) => void; isCelsius: boolean }) {
   return (
     <Box
       sx={{
@@ -47,7 +45,7 @@ function DemoPageContent({ pathname, navigate }: { pathname: string; navigate: (
     >
       {pathname.startsWith("/dashboard") ? (
         <>
-          <Dashboard />
+          <Dashboard isCelsius={isCelsius} />
         </>
       ) : null}
 
@@ -85,11 +83,36 @@ function DemoPageContent({ pathname, navigate }: { pathname: string; navigate: (
   );
 }
 
+interface ToggleProps {
+  isCelsius: boolean;
+  handleChange: () => void;
+}
+
+const ToggleIsCelsius: React.FC<ToggleProps> = ({ isCelsius, handleChange }) => {
+  return (
+    <IconButton onClick={handleChange} aria-label="isCelsius">
+      {isCelsius ? <ThermostatIcon sx={{ color: "#42a5f5" }} /> : <ThermostatIcon />}
+    </IconButton>
+  );
+};
+
 interface DemoProps {
   window?: () => Window;
 }
 
 export default function DashboardLayoutPattern(props: DemoProps) {
+  const [isCelsius, setIsCelsius] = useState<boolean>(true);
+
+  const handleChange = () => {
+    setIsCelsius((p) => !p);
+    saveIsCelsius(!isCelsius);
+  };
+
+  useEffect(() => {
+    const savedData = loadIsCelsius();
+    setIsCelsius(savedData);
+  }, []);
+
   const { window } = props;
 
   const router = useDemoRouter("/dashboard");
@@ -100,7 +123,7 @@ export default function DashboardLayoutPattern(props: DemoProps) {
     // preview-start
     <AppProvider
       branding={{
-        title: "Handelsbanken App",
+        title: "Weather App",
       }}
       navigation={[
         {
@@ -119,8 +142,8 @@ export default function DashboardLayoutPattern(props: DemoProps) {
       theme={demoTheme}
       window={demoWindow}
     >
-      <DashboardLayout>
-        <DemoPageContent pathname={router.pathname} navigate={router.navigate} />
+      <DashboardLayout slots={{ toolbarActions: () => <ToggleIsCelsius isCelsius={isCelsius} handleChange={handleChange} /> }}>
+        <DemoPageContent pathname={router.pathname} navigate={router.navigate} isCelsius={isCelsius} />
       </DashboardLayout>
     </AppProvider>
   );

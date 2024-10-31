@@ -14,7 +14,11 @@ interface Location {
   longitude: number;
 }
 
-const Dashboard: React.FC = () => {
+interface DashBoardProps {
+  isCelsius: boolean;
+}
+
+const Dashboard: React.FC<DashBoardProps> = ({ isCelsius }) => {
   const [selectedWeatherData, setSelectedWeatherData] = useState<any>(null);
   const [berlinWeatherData, setBerlinWeatherData] = useState<any>(null);
   const [londonWeatherData, setLondonWeatherData] = useState<any>(null);
@@ -130,7 +134,9 @@ const Dashboard: React.FC = () => {
     setShowDetails(false);
   };
 
-  console.log(weatherDetails);
+  function celsiusToFahrenheit(celsius: number): number {
+    return (celsius * 9) / 5 + 32;
+  }
 
   return (
     <div>
@@ -147,7 +153,10 @@ const Dashboard: React.FC = () => {
                   {selectedWeatherData ? (
                     <WeatherCard
                       locationName={selectedLocation.name}
-                      temperature={selectedWeatherData.current.temperature2m}
+                      isCelsius={isCelsius}
+                      temperature={
+                        isCelsius ? selectedWeatherData.current.temperature2m : celsiusToFahrenheit(selectedWeatherData.current.temperature2m)
+                      }
                       humidity={selectedWeatherData.current.relativeHumidity2m}
                       onClick={() => handleCardClick(selectedWeatherData, selectedLocation)}
                     />
@@ -161,7 +170,8 @@ const Dashboard: React.FC = () => {
                   {berlinWeatherData ? (
                     <WeatherCard
                       locationName="Berlin"
-                      temperature={berlinWeatherData.current.temperature2m}
+                      isCelsius={isCelsius}
+                      temperature={isCelsius ? berlinWeatherData.current.temperature2m : celsiusToFahrenheit(berlinWeatherData.current.temperature2m)}
                       humidity={berlinWeatherData.current.relativeHumidity2m}
                       onClick={() =>
                         handleCardClick(berlinWeatherData, {
@@ -180,7 +190,10 @@ const Dashboard: React.FC = () => {
                 {londonWeatherData ? (
                   <WeatherCard
                     locationName="London"
-                    temperature={londonWeatherData.current.temperature2m}
+                    isCelsius={isCelsius}
+                    temperature={
+                      isCelsius ? londonWeatherData.current.temperature2m : celsiusToFahrenheit(londonWeatherData.current.relativeHumidity2m)
+                    }
                     humidity={londonWeatherData.current.relativeHumidity2m}
                     onClick={() =>
                       handleCardClick(londonWeatherData, {
@@ -198,7 +211,7 @@ const Dashboard: React.FC = () => {
           </Box>
         </>
       ) : (
-        <WeatherDetails name={weatherDetails.location.name} weatherDetails={weatherDetails.data} handleGoBack={handleGoBack} />
+        <WeatherDetails name={weatherDetails.location.name} weatherDetails={weatherDetails.data} handleGoBack={handleGoBack} isCelsius={isCelsius} />
       )}
     </div>
   );

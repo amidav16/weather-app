@@ -10,8 +10,6 @@ import CloudIcon from "@mui/icons-material/Cloud";
 import WbSunnyIcon from "@mui/icons-material/WbSunny";
 import NightlightIcon from "@mui/icons-material/Nightlight";
 
-import Switch from "@mui/material/Switch";
-import Paper from "@mui/material/Paper";
 import Grow from "@mui/material/Grow";
 import Divider from "@mui/material/Divider";
 import { useTheme } from "@mui/material/styles";
@@ -34,9 +32,10 @@ interface WeatherDetailsProps {
     daily: { sunrise: number; sunset: number };
   };
   handleGoBack: () => void;
+  isCelsius: boolean;
 }
 
-const WeatherDetails: React.FC<WeatherDetailsProps> = ({ name, weatherDetails, handleGoBack }) => {
+const WeatherDetails: React.FC<WeatherDetailsProps> = ({ name, weatherDetails, handleGoBack, isCelsius }) => {
   const theme = useTheme();
 
   // Helper function to round numbers
@@ -53,6 +52,10 @@ const WeatherDetails: React.FC<WeatherDetailsProps> = ({ name, weatherDetails, h
 
   // Get the weather description and icon based on the weather code
   const weatherInfo = weatherCodeMapping[weatherDetails.current.weatherCode] || { description: "Unknown", icon: null };
+
+  function celsiusToFahrenheit(celsius: number): number {
+    return (celsius * 9) / 5 + 32;
+  }
 
   return (
     <>
@@ -75,7 +78,7 @@ const WeatherDetails: React.FC<WeatherDetailsProps> = ({ name, weatherDetails, h
                   <Box display="flex" alignItems="center">
                     <Typography variant="h6" sx={{ display: "flex", alignItems: "center", mb: 1 }}>
                       {weatherDetails.current.isDay ? <WbSunnyIcon /> : <NightlightIcon />}
-                      &nbsp;{roundedTemp} °C
+                      &nbsp;{isCelsius ? roundedTemp : celsiusToFahrenheit(roundedTemp)} {isCelsius ? "°C" : "°F"}
                     </Typography>
                   </Box>
                 </Grid>
@@ -97,7 +100,7 @@ const WeatherDetails: React.FC<WeatherDetailsProps> = ({ name, weatherDetails, h
                   <Box display="flex" alignItems="center">
                     <ThermostatIcon />
                     <Typography variant="body1" sx={{ ml: 1 }}>
-                      Apparent temp: {roundedApparentTemp} °C
+                      Apparent temp: {isCelsius ? roundedApparentTemp : celsiusToFahrenheit(roundedApparentTemp)} {isCelsius ? "°C" : "°F"}
                     </Typography>
                   </Box>
                 </Grid>
