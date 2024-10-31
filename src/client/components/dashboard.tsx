@@ -191,9 +191,7 @@ const Dashboard: React.FC<DashBoardProps> = ({ isCelsius }) => {
                   <WeatherCard
                     locationName="London"
                     isCelsius={isCelsius}
-                    temperature={
-                      isCelsius ? londonWeatherData.current.temperature2m : celsiusToFahrenheit(londonWeatherData.current.relativeHumidity2m)
-                    }
+                    temperature={isCelsius ? londonWeatherData.current.temperature2m : celsiusToFahrenheit(londonWeatherData.current.temperature2m)}
                     humidity={londonWeatherData.current.relativeHumidity2m}
                     onClick={() =>
                       handleCardClick(londonWeatherData, {
