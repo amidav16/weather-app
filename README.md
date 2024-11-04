@@ -1,4 +1,4 @@
-## Handelsbanken Weather - app
+## Weather - app
 
 # What this project contains:
 

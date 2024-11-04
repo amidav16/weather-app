@@ -91,7 +91,7 @@ interface ToggleProps {
 const ToggleIsCelsius: React.FC<ToggleProps> = ({ isCelsius, handleChange }) => {
   return (
     <IconButton onClick={handleChange} aria-label="isCelsius">
-      {isCelsius ? <ThermostatIcon sx={{ color: "#42a5f5" }} /> : <ThermostatIcon />}
+      <ThermostatIcon sx={{ color: isCelsius ? "#42a5f5" : "" }} />
     </IconButton>
   );
 };
