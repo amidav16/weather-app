@@ -134,9 +134,9 @@ const Dashboard: React.FC<DashBoardProps> = ({ isCelsius }) => {
     setShowDetails(false);
   };
 
-  function celsiusToFahrenheit(celsius: number): number {
+  const celsiusToFahrenheit = (celsius: number): number => {
     return (celsius * 9) / 5 + 32;
-  }
+  };
 
   return (
     <div>

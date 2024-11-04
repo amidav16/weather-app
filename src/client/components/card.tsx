@@ -20,7 +20,12 @@ const WeatherCard: React.FC<WeatherCardProps> = ({ locationName, isCelsius, temp
   const roundedTemp = Number(temperature?.toFixed(2));
 
   return (
-    <Box sx={{ minWidth: 300, cursor: "pointer" }} onClick={onClick}>
+    <Box
+      sx={{ minWidth: 300, cursor: "pointer" }}
+      role="button" // Add this line
+      onClick={onClick}
+      tabIndex={0} // Optional: make it focusable for better accessibility
+    >
       <Card
         variant="outlined"
         sx={{
@@ -34,7 +39,6 @@ const WeatherCard: React.FC<WeatherCardProps> = ({ locationName, isCelsius, temp
           <Typography variant="h4" component="div">
             {locationName}
           </Typography>
-
           <Typography variant="body2">
             Humidity: {humidity}%
             <br />
