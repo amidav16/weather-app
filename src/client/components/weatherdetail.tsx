@@ -53,9 +53,9 @@ const WeatherDetails: React.FC<WeatherDetailsProps> = ({ name, weatherDetails, h
   // Get the weather description and icon based on the weather code
   const weatherInfo = weatherCodeMapping[weatherDetails.current.weatherCode] || { description: "Unknown", icon: null };
 
-  function celsiusToFahrenheit(celsius: number): number {
+  const celsiusToFahrenheit = (celsius: number): number => {
     return formatNumber((celsius * 9) / 5 + 32, 2);
-  }
+  };
 
   return (
     <>
