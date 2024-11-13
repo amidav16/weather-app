@@ -2,11 +2,10 @@ import React, { useEffect, useState } from "react";
 import { locations, current } from "./data";
 import Grid from "@mui/material/Grid2";
 import Box from "@mui/material/Box";
-import Dropdown from "./dropdown";
+import Dropdown from "./autocomplete";
 import WeatherCard from "./card";
 import WeatherDetails from "./weatherdetail";
 import { fetchWeatherApi } from "openmeteo";
-import { saveWeatherData, loadWeatherData } from "./localstorageutils";
 
 interface Location {
   name: string;
@@ -22,23 +21,17 @@ const Dashboard: React.FC<DashBoardProps> = ({ isCelsius }) => {
   const [selectedWeatherData, setSelectedWeatherData] = useState<any>(null);
   const [berlinWeatherData, setBerlinWeatherData] = useState<any>(null);
   const [londonWeatherData, setLondonWeatherData] = useState<any>(null);
+  const [osloWeatherData, setOsloWeatheData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<Location>(locations[0]);
   const [weatherDetails, setWeatherDetails] = useState<any>(null);
   const [showDetails, setShowDetails] = useState<boolean>(false);
 
-  // Load data from localStorage on component mount
-  useEffect(() => {
-    const savedData = loadWeatherData();
-    if (savedData) {
-      setSelectedLocation({
-        name: savedData.locationName,
-        latitude: 0,
-        longitude: 0,
-      });
-      setSelectedWeatherData(savedData.weatherData);
-    }
-  }, []);
+  const Coordinates = {
+    oslo: { longitude: 10.7522, latitude: 59.9139 },
+    berlin: { longitude: 13.41, latitude: 52.52 },
+    london: { longitude: -0.1278, latitude: 51.5074 },
+  };
 
   const fetchWeatherData = async (latitude: number, longitude: number) => {
     const params = {
@@ -100,23 +93,20 @@ const Dashboard: React.FC<DashBoardProps> = ({ isCelsius }) => {
     const { latitude, longitude } = selectedLocation;
     const weatherData = await fetchWeatherData(latitude, longitude);
     setSelectedWeatherData(weatherData);
-
-    // Save the selected location name and fetched weather data to localStorage
-    if (weatherData) {
-      saveWeatherData(selectedLocation.name, weatherData);
-    }
   };
 
   useEffect(() => {
-    const fetchBerlinAndLondonWeather = async () => {
-      const berlinData = await fetchWeatherData(52.52, 13.41); // Berlin coordinates
-      const londonData = await fetchWeatherData(51.5074, -0.1278); // London coordinates
+    const fetchFixedWeathers = async () => {
+      const berlinData = await fetchWeatherData(Coordinates.berlin.latitude, Coordinates.berlin.longitude); // Berlin coordinates
+      const londonData = await fetchWeatherData(Coordinates.london.latitude, Coordinates.london.longitude); // London coordinates
+      const osloData = await fetchWeatherData(Coordinates.oslo.latitude, Coordinates.oslo.longitude);
 
+      setOsloWeatheData(osloData);
       setBerlinWeatherData(berlinData);
       setLondonWeatherData(londonData);
     };
 
-    fetchBerlinAndLondonWeather();
+    fetchFixedWeathers();
   }, []);
 
   useEffect(() => {
@@ -139,7 +129,7 @@ const Dashboard: React.FC<DashBoardProps> = ({ isCelsius }) => {
   };
 
   return (
-    <div>
+    <Box>
       <h1>Dashboard</h1>
 
       {!showDetails ? (
@@ -150,18 +140,22 @@ const Dashboard: React.FC<DashBoardProps> = ({ isCelsius }) => {
             <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
               <Grid size={4} sx={{ minWidth: 300 }}>
                 <div>
-                  {selectedWeatherData ? (
+                  {osloWeatherData ? (
                     <WeatherCard
-                      locationName={selectedLocation.name}
+                      locationName="Oslo"
                       isCelsius={isCelsius}
-                      temperature={
-                        isCelsius ? selectedWeatherData.current.temperature2m : celsiusToFahrenheit(selectedWeatherData.current.temperature2m)
+                      temperature={isCelsius ? osloWeatherData.current.temperature2m : celsiusToFahrenheit(osloWeatherData.current.temperature2m)}
+                      humidity={osloWeatherData.current.relativeHumidity2m}
+                      onClick={() =>
+                        handleCardClick(osloWeatherData, {
+                          name: "Oslo",
+                          latitude: Coordinates.oslo.latitude,
+                          longitude: Coordinates.oslo.longitude,
+                        })
                       }
-                      humidity={selectedWeatherData.current.relativeHumidity2m}
-                      onClick={() => handleCardClick(selectedWeatherData, selectedLocation)}
                     />
                   ) : (
-                    <p>No data available for {selectedLocation.name}</p>
+                    <p>No data available for Berlin</p>
                   )}
                 </div>
               </Grid>
@@ -176,8 +170,8 @@ const Dashboard: React.FC<DashBoardProps> = ({ isCelsius }) => {
                       onClick={() =>
                         handleCardClick(berlinWeatherData, {
                           name: "Berlin",
-                          latitude: 52.52,
-                          longitude: 13.41,
+                          latitude: Coordinates.berlin.latitude,
+                          longitude: Coordinates.berlin.longitude,
                         })
                       }
                     />
@@ -196,8 +190,8 @@ const Dashboard: React.FC<DashBoardProps> = ({ isCelsius }) => {
                     onClick={() =>
                       handleCardClick(londonWeatherData, {
                         name: "London",
-                        latitude: 51.5074,
-                        longitude: -0.1278,
+                        latitude: Coordinates.london.latitude,
+                        longitude: Coordinates.london.longitude,
                       })
                     }
                   />
@@ -211,7 +205,7 @@ const Dashboard: React.FC<DashBoardProps> = ({ isCelsius }) => {
       ) : (
         <WeatherDetails name={weatherDetails.location.name} weatherDetails={weatherDetails.data} handleGoBack={handleGoBack} isCelsius={isCelsius} />
       )}
-    </div>
+    </Box>
   );
 };
 

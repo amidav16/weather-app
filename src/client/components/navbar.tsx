@@ -16,6 +16,8 @@ import { useDemoRouter } from "@toolpad/core/internal";
 import { saveIsCelsius, loadIsCelsius } from "./localstorageutils";
 import Dashboard from "./dashboard";
 
+import Background from "../../assets/Background.jpg";
+
 const demoTheme = createTheme({
   cssVariables: {
     colorSchemeSelector: "data-toolpad-color-scheme",
@@ -31,12 +33,10 @@ const demoTheme = createTheme({
     },
   },
 });
-
 function DemoPageContent({ pathname, navigate, isCelsius }: { pathname: string; navigate: (path: string | URL) => void; isCelsius: boolean }) {
   return (
     <Box
       sx={{
-        py: 4,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -45,6 +45,22 @@ function DemoPageContent({ pathname, navigate, isCelsius }: { pathname: string; 
     >
       {pathname.startsWith("/dashboard") ? (
         <>
+          <Box
+            sx={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              backgroundImage: `url(${Background})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              opacity: 0.07, // Transparency level for the background
+              backgroundBlendMode: "multiply",
+
+              zIndex: -1, // Ensures the background stays behind the content
+            }}
+          />
           <Dashboard isCelsius={isCelsius} />
         </>
       ) : null}
@@ -55,27 +71,9 @@ function DemoPageContent({ pathname, navigate, isCelsius }: { pathname: string; 
             <p>Dashboard content for {pathname}</p>
           </Typography>
           <Stack direction="row" spacing={1} sx={{ pt: 1 }}>
-            <Button
-              onClick={() => {
-                navigate("/orders/1");
-              }}
-            >
-              Order 1
-            </Button>
-            <Button
-              onClick={() => {
-                navigate("/orders/2");
-              }}
-            >
-              Order 2
-            </Button>
-            <Button
-              onClick={() => {
-                navigate("/orders/3");
-              }}
-            >
-              Order 3
-            </Button>
+            <Button onClick={() => navigate("/orders/1")}>Order 1</Button>
+            <Button onClick={() => navigate("/orders/2")}>Order 2</Button>
+            <Button onClick={() => navigate("/orders/3")}>Order 3</Button>
           </Stack>
         </>
       ) : null}
