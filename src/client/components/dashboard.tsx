@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { locations, current } from "./data";
 import Grid from "@mui/material/Grid2";
 import Box from "@mui/material/Box";
-import Dropdown from "./autocomplete";
+import AutoComplete from "./autocomplete";
 import WeatherCard from "./card";
 import WeatherDetails from "./weatherdetail";
 import { fetchWeatherApi } from "openmeteo";
@@ -107,6 +107,7 @@ const Dashboard: React.FC<DashBoardProps> = ({ isCelsius }) => {
     };
 
     fetchFixedWeathers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -130,12 +131,13 @@ const Dashboard: React.FC<DashBoardProps> = ({ isCelsius }) => {
 
   return (
     <Box>
-      <h1>Dashboard</h1>
+      {!showDetails ? <h1>Dashboard</h1> : <h1>Your location</h1>}
 
       {!showDetails ? (
         <>
-          <Dropdown selectedLocation={selectedLocation} setSelectedLocation={setSelectedLocation} />
+          <AutoComplete setSelectedLocation={setSelectedLocation} />
 
+          {/* Oslo Berlin and London */}
           <Box sx={{ flexGrow: 1, m: 4 }}>
             <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
               <Grid size={4} sx={{ minWidth: 300 }}>
