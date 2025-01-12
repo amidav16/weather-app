@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { locations, current } from "./data";
+import React, { useEffect, useState, useCallback } from "react";
+import { current } from "./data";
 import Grid from "@mui/material/Grid2";
 import Box from "@mui/material/Box";
 import AutoComplete from "./autocomplete";
@@ -23,7 +23,8 @@ const Dashboard: React.FC<DashBoardProps> = ({ isCelsius }) => {
   const [londonWeatherData, setLondonWeatherData] = useState<any>(null);
   const [osloWeatherData, setOsloWeatheData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
-  const [selectedLocation, setSelectedLocation] = useState<Location>(locations[0]);
+  const [selectedLocation, setSelectedLocation] = useState<Location>({ name: "", latitude: 0, longitude: 0 });
+
   const [weatherDetails, setWeatherDetails] = useState<any>(null);
   const [showDetails, setShowDetails] = useState<boolean>(false);
 
@@ -89,11 +90,11 @@ const Dashboard: React.FC<DashBoardProps> = ({ isCelsius }) => {
     }
   };
 
-  const fetchSelectedLocationWeather = async () => {
+  const fetchSelectedLocationWeather = useCallback(async () => {
     const { latitude, longitude } = selectedLocation;
     const weatherData = await fetchWeatherData(latitude, longitude);
     setSelectedWeatherData(weatherData);
-  };
+  }, [selectedLocation]);
 
   useEffect(() => {
     const fetchFixedWeathers = async () => {
@@ -112,6 +113,26 @@ const Dashboard: React.FC<DashBoardProps> = ({ isCelsius }) => {
 
   useEffect(() => {
     fetchSelectedLocationWeather();
+  }, [fetchSelectedLocationWeather]);
+
+  useEffect(() => {
+    if (!selectedLocation) return;
+
+    if (selectedLocation.name === "") return;
+
+    const fetchAndHandleClick = async () => {
+      try {
+        // Fetch weather data for the newly selected location
+        const weatherData = await fetchWeatherData(selectedLocation.latitude, selectedLocation.longitude);
+
+        // Trigger handleCardClick with the fetched data and selected location
+        handleCardClick(weatherData, selectedLocation);
+      } catch (err) {
+        console.error("Failed to fetch data for selected location", err);
+      }
+    };
+
+    fetchAndHandleClick();
   }, [selectedLocation]);
 
   if (error) return <div>{error}</div>;
