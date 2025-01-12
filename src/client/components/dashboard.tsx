@@ -18,7 +18,6 @@ interface DashBoardProps {
 }
 
 const Dashboard: React.FC<DashBoardProps> = ({ isCelsius }) => {
-  const [selectedWeatherData, setSelectedWeatherData] = useState<any>(null);
   const [berlinWeatherData, setBerlinWeatherData] = useState<any>(null);
   const [londonWeatherData, setLondonWeatherData] = useState<any>(null);
   const [osloWeatherData, setOsloWeatheData] = useState<any>(null);
@@ -93,7 +92,6 @@ const Dashboard: React.FC<DashBoardProps> = ({ isCelsius }) => {
   const fetchSelectedLocationWeather = useCallback(async () => {
     const { latitude, longitude } = selectedLocation;
     const weatherData = await fetchWeatherData(latitude, longitude);
-    setSelectedWeatherData(weatherData);
   }, [selectedLocation]);
 
   useEffect(() => {
