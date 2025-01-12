@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { current } from "./data";
 import Grid from "@mui/material/Grid2";
 import Box from "@mui/material/Box";
@@ -89,11 +89,6 @@ const Dashboard: React.FC<DashBoardProps> = ({ isCelsius }) => {
     }
   };
 
-  const fetchSelectedLocationWeather = useCallback(async () => {
-    const { latitude, longitude } = selectedLocation;
-    const weatherData = await fetchWeatherData(latitude, longitude);
-  }, [selectedLocation]);
-
   useEffect(() => {
     const fetchFixedWeathers = async () => {
       const berlinData = await fetchWeatherData(Coordinates.berlin.latitude, Coordinates.berlin.longitude); // Berlin coordinates
@@ -108,10 +103,6 @@ const Dashboard: React.FC<DashBoardProps> = ({ isCelsius }) => {
     fetchFixedWeathers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    fetchSelectedLocationWeather();
-  }, [fetchSelectedLocationWeather]);
 
   useEffect(() => {
     if (!selectedLocation) return;
