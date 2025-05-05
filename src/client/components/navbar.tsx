@@ -8,6 +8,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import ThermostatIcon from "@mui/icons-material/Thermostat";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import IconButton from "@mui/material/IconButton";
+import WeatherIcon from "../../assets/cloud-computing.png";
 
 import { AppProvider } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
@@ -122,6 +123,7 @@ export default function DashboardLayoutPattern(props: DemoProps) {
     <AppProvider
       branding={{
         title: "Weather App",
+        logo: <img src={WeatherIcon} alt="Weather App Icon" style={{ width: 30, height: 30, margin: 5 }} />, // Add your custom icon here
       }}
       navigation={[
         {
